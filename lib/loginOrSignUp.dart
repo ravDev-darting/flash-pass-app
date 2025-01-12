@@ -18,6 +18,18 @@ class _LoginOrSignUpState extends State<LoginOrSignUp> {
           const SizedBox(
             height: 25,
           ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'BACK',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color.fromARGB(178, 4, 31, 5),
+                  ),
+                )),
+          ),
           Card(
             elevation: 0,
             child: FittedBox(
@@ -43,7 +55,7 @@ class _LoginOrSignUpState extends State<LoginOrSignUp> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 40,
+                          fontSize: 35,
                           color: Color.fromARGB(178, 4, 31, 5),
                         ),
                       ),
@@ -52,7 +64,7 @@ class _LoginOrSignUpState extends State<LoginOrSignUp> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                          fontSize: 17,
                           color: Color.fromARGB(178, 4, 31, 5),
                         ),
                       ),
@@ -62,13 +74,41 @@ class _LoginOrSignUpState extends State<LoginOrSignUp> {
               ),
             ),
           ),
-          const SizedBox(
-            height: 10,
+          SizedBox(
+            height: MediaQuery.of(context).size.height * .06,
           ),
-          const Center(
-            heightFactor: 6,
+          const Text(
+            "IF YOU ARE",
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+                fontSize: 23, color: Colors.black, fontWeight: FontWeight.w500),
+          ),
+          const Text(
+            "POLICE",
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+                fontSize: 23, color: Colors.black, fontWeight: FontWeight.w500),
+          ),
+          const Text(
+            "FIREMAN",
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+                fontSize: 23, color: Colors.black, fontWeight: FontWeight.w500),
+          ),
+          const Text(
+            "AMBULANCE",
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+                fontSize: 23, color: Colors.black, fontWeight: FontWeight.w500),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * .18,
+          ),
+          const Align(
+            alignment: Alignment.centerLeft,
+            widthFactor: 1.9,
             child: Text(
-              "IF YOU ARE\nPOLICE\nFIREMAN\nAMBULANCE",
+              "PLEASE CHOOSE TO",
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   fontSize: 20,
@@ -76,83 +116,48 @@ class _LoginOrSignUpState extends State<LoginOrSignUp> {
                   fontWeight: FontWeight.w500),
             ),
           ),
-          const SizedBox(
-            height: 40,
-          ),
+          const SizedBox(height: 7),
           Container(
             padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * .35,
+                horizontal: MediaQuery.of(context).size.width * .39,
                 vertical: 15),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
                 color: Colors.green.shade100.withOpacity(.43)),
             child: const Text(
-              'EMPLOYEE',
+              'LOGIN',
               style: TextStyle(fontSize: 20),
             ),
           ),
           const SizedBox(
-            height: 10,
+            height: 30,
           ),
+          Align(
+            alignment: Alignment.centerLeft,
+            widthFactor: 2.45,
+            child: Text(
+              "new account".toUpperCase(),
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500),
+            ),
+          ),
+          const SizedBox(height: 7),
           Container(
             padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * .38,
+                horizontal: MediaQuery.of(context).size.width * .37,
                 vertical: 15),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
                 color: Colors.green.shade100.withOpacity(.43)),
             child: const Text(
-              'VISITOR',
+              'SIGN UP',
               style: TextStyle(fontSize: 20),
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: SizedBox(
-        height: MediaQuery.of(context).size.height * .16,
-        child: BottomAppBar(
-          shape: const CircularNotchedRectangle(),
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(178, 4, 31, 5),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    'CONTACT US',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: const <Widget>[
-                      Text(
-                        '+966548293737\npmu@pmu.edu.sa',
-                        style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.w400),
-                      ),
-                      Spacer(),
-                      Icon(
-                        Icons.email_outlined,
-                        size: 70,
-                        color: Colors.grey,
-                      ),
-                      Icon(
-                        Icons.call_outlined,
-                        size: 70,
-                        color: Colors.grey,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

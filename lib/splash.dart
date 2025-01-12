@@ -14,8 +14,10 @@ class _SplashScreenMainState extends State<SplashScreenMain> {
   @override
   Widget build(BuildContext context) {
     Timer(const Duration(seconds: 3), () {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (_) => const DashScreen()));
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const DashScreen()),
+          ModalRoute.withName(''));
     });
     return Scaffold(
       backgroundColor: const Color.fromARGB(82, 115, 230, 120),
