@@ -11,6 +11,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey.shade100,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -122,12 +123,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           const SizedBox(
-            height: 25,
+            height: 30,
           ),
           const Padding(
             padding: EdgeInsets.all(6.0),
             child: Text(
-              "ENTER YOUR ID NUMBER",
+              "ENTER YOUR PASSWORD",
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   fontSize: 23,
@@ -149,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: const TextField(
               // controller: _reviewController,
               decoration: InputDecoration(
-                  hintText: '  ID - IQAMA NUMBER',
+                  hintText: '  PASSWORD',
                   enabledBorder:
                       UnderlineInputBorder(borderSide: BorderSide.none),
                   focusedBorder:
@@ -157,20 +158,56 @@ class _LoginScreenState extends State<LoginScreen> {
                   hintStyle: TextStyle(fontSize: 13, color: Color(0xFF707070))),
             ),
           ),
+          const SizedBox(
+            height: 3,
+          ),
+          Row(
+            children: [
+              const Text(
+                "  Forgot your password?",
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    fontSize: 15,
+                    color: Color(0xFF707070),
+                    fontWeight: FontWeight.w500),
+              ),
+              Text(
+                " Forgot password",
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.green.shade600.withOpacity(.6),
+                    fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
           SizedBox(
             height: MediaQuery.of(context).size.height * .18,
           ),
-          const SizedBox(height: 7),
-          Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * .39,
-                vertical: 15),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: Colors.green.shade100.withOpacity(.43)),
-            child: const Text(
-              'LOGIN',
-              style: TextStyle(fontSize: 20),
+          Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * .92,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pushNamed(context, ''),
+                style: ElevatedButton.styleFrom(
+                    splashFactory: NoSplash.splashFactory,
+                    backgroundColor: Colors.green.shade100.withOpacity(.7),
+                    shadowColor: Colors.transparent,
+                    elevation: 0,
+                    minimumSize: const Size(0, 50),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20))),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'Continue',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
