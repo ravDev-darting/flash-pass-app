@@ -1,4 +1,4 @@
-package com.example.flash_pass
+package com.sa.flashpass
 
 import io.flutter.embedding.android.FlutterActivity
 

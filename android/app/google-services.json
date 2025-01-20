@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "156227740196",
+    "project_id": "flash-pass-fa240",
+    "storage_bucket": "flash-pass-fa240.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156227740196:android:f8e5bf2da49a70699e6eb1",
+        "android_client_info": {
+          "package_name": "com.sa.flashpass"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhwE8mniKg69li7Rsa5GqtzWb2oRcLPOU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

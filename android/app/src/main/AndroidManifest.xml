@@ -1,9 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.flash_pass">
+    package="com.sa.flashpass"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+
+   <uses-permission android:name="android.permission.INTERNET"/>
+   <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+   <uses-permission android:name="android.permission.READ_CONTACTS" />
+   <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+     
+
    <application
-        android:label="flash_pass"
+        android:label="Flash Pass"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBUXE2dMW9PAoFR_f5D7g2vQl_r31TZeZs"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
