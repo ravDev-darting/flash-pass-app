@@ -45,6 +45,8 @@ dependencies:
   flutter_polyline_points: 
   flutter_osm_plugin:
   flutter_map: 
+  latlong2:
+  geolocator: 
 
 dev_dependencies:
   flutter_test:

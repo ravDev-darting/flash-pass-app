@@ -1,125 +1,166 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart' as loc;
-
-const CameraPosition cameraPosition = CameraPosition(
-  target: LatLng(33.6155555, 73.1455555),
-  zoom: 15,
-);
-
-String? cityName;
-Completer<GoogleMapController> completer = Completer();
-LatLng latLng = const LatLng(33.6155555, 73.1455555);
-GoogleMapController? mapController;
-Set<Marker> markers = {};
-PolylinePoints? polylinePoints;
-bool? rideStart;
-getUserCurrentLocation() async {
-  mapController = await completer.future;
-  loc.LocationData currentLocation;
-  var location = loc.Location();
-  currentLocation = await location.getLocation();
-  mapController!.animateCamera(CameraUpdate.newCameraPosition(
-    CameraPosition(
-      target: LatLng(currentLocation.latitude!.toDouble(),
-          currentLocation.longitude!.toDouble()),
-      zoom: 15,
-    ),
-  ));
-  latLng = LatLng(currentLocation.latitude!.toDouble(),
-      currentLocation.longitude!.toDouble());
-
-  // try {
-  //   List<Placemark> placemarks = await placemarkFromCoordinates(
-  //       currentLocation.latitude!.toDouble(),
-  //       currentLocation.longitude!.toDouble());
-  //   cityName = placemarks[0].locality.toString();
-  // } catch (err) {}
-}
-
-Future<void> getUserLocation() async {
-  var location = loc.Location();
-  var checkPermForLocation = await location.requestPermission();
-
-  if (checkPermForLocation == loc.PermissionStatus.granted) {
-    getUserCurrentLocation();
-  } else if (checkPermForLocation == loc.PermissionStatus.denied) {
-    location.requestPermission();
-  } else if (checkPermForLocation == loc.PermissionStatus.deniedForever) {}
-}
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  LatLng? _currentLocation;
+  final MapController _mapController = MapController();
+
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context);
     final mH = MediaQuery.of(context).size.height;
     final mW = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
+            child: Column(children: [
+          Padding(
             padding: const EdgeInsets.all(15.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                20.height,
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: Text(
-                    'Around You',
-                    style: TextStyle(fontSize: 20, color: primary.primaryColor),
-                  ),
+            child: Card(
+              elevation: 0,
+              child: FittedBox(
+                fit: BoxFit.fitWidth,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          color: const Color.fromARGB(178, 4, 31, 5)
+                              .withOpacity(.25)),
+                      child: const Icon(
+                        Icons.traffic_outlined,
+                        size: 80,
+                        color: Color.fromARGB(178, 4, 31, 5),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          " FLASH🚓PASS",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 35,
+                            color: Color.fromARGB(178, 4, 31, 5),
+                          ),
+                        ),
+                        Text(
+                          "  EMERGENCY",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            color: Color.fromARGB(178, 4, 31, 5),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                20.height,
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  height: mH * .48,
+              ),
+            ),
+          ),
+          _currentLocation == null
+              ? const Center(child: CircularProgressIndicator())
+              : SizedBox(
+                  height: mH * .3,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: GoogleMap(
-                      myLocationButtonEnabled: true,
-                      myLocationEnabled: true,
-                      onMapCreated: (controller) {
-                        setState(() {
-                          mapController = controller;
-                          completer.complete(controller);
-                        });
-                      },
-                      zoomControlsEnabled: false,
-                      initialCameraPosition: cameraPosition,
+                    child: FlutterMap(
+                      mapController: _mapController,
+                      options: MapOptions(
+                        center: _currentLocation,
+                        zoom: 15.0,
+                      ),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          subdomains: const ['a', 'b', 'c'],
+                        ),
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              point: _currentLocation!,
+                              builder: (ctx) => const Icon(
+                                Icons.location_pin,
+                                color: Colors.red,
+                                size: 40.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
+        ])),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _recenterMap,
+        backgroundColor: Colors.white,
+        child: const Icon(
+          Icons.location_searching_rounded,
+          color: Colors.red,
         ),
       ),
     );
   }
 
   @override
-  void dispose() {
-    completer = Completer();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
   }
 
-  @override
-  void initState() {
-    getUserLocation();
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-    super.initState();
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return; // Location services are not enabled
+    }
+
+    // Check location permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return; // Permissions are denied
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return; // Permissions are permanently denied
+    }
+
+    // Get the current location
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    setState(() {
+      _currentLocation = LatLng(position.latitude, position.longitude);
+    });
+  }
+
+  void _recenterMap() {
+    if (_currentLocation != null) {
+      // Center the map to the current location
+      _mapController.move(
+          _currentLocation!, 16.0); // You can adjust zoom as needed
+    }
   }
 }
 
