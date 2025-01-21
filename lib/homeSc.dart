@@ -8,7 +8,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        padding: const EdgeInsets.only(top: 7, bottom: 5),
                         color:
                             const Color.fromARGB(178, 4, 31, 5).withOpacity(.1),
                         child: Row(
@@ -267,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              5.height,
+              7.height,
               const Padding(
                 padding: EdgeInsets.only(left: 10),
                 child: Text(
@@ -282,23 +282,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.only(left: 7, right: 7),
                       child: SizedBox(
                         height: mH * .25,
-                        child: GoogleMap(
-                          myLocationButtonEnabled: true,
-                          initialCameraPosition: CameraPosition(
-                            target: _currentLocation!,
-                            zoom: 15.0,
-                          ),
-                          onMapCreated: (controller) {
-                            _googleMapController = controller;
-                          },
-                          markers: {
-                            Marker(
-                              markerId: const MarkerId('currentLocation'),
-                              position: _currentLocation!,
-                              icon: BitmapDescriptor.defaultMarkerWithHue(
-                                  BitmapDescriptor.hueRed),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: GoogleMap(
+                              myLocationButtonEnabled: true,
+                              zoomControlsEnabled: false,
+                              myLocationEnabled: true,
+                              initialCameraPosition: CameraPosition(
+                                target: _currentLocation!,
+                                zoom: 15.0,
+                              ),
+                              onMapCreated: (controller) {
+                                _googleMapController = controller;
+                              },
+                              markers: {
+                                Marker(
+                                  markerId: const MarkerId('currentLocation'),
+                                  position: _currentLocation!,
+                                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                                      BitmapDescriptor.hueRed),
+                                ),
+                              },
                             ),
-                          },
+                          ),
                         ),
                       ),
                     ),
@@ -377,14 +386,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  void _recenterMap() {
-    if (_currentLocation != null && _googleMapController != null) {
-      _googleMapController!.animateCamera(
-        CameraUpdate.newLatLngZoom(_currentLocation!, 16.0),
-      );
-    }
   }
 }
 
