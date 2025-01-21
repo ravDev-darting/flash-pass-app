@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:latlong2/latlong.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,18 +13,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   LatLng? _currentLocation;
-  final MapController _mapController = MapController();
+  GoogleMapController? _googleMapController;
 
   int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
 
     // Format date and time
-
     String formattedDate = DateFormat('MMM yyyy hh:mm a').format(now);
     final mH = MediaQuery.of(context).size.height;
     final mW = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -282,54 +282,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.only(left: 7, right: 7),
                       child: SizedBox(
                         height: mH * .25,
-                        child: Stack(children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black)),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: FlutterMap(
-                                mapController: _mapController,
-                                options: MapOptions(
-                                  center: _currentLocation,
-                                  zoom: 15.0,
-                                ),
-                                children: [
-                                  TileLayer(
-                                    urlTemplate:
-                                        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                    subdomains: const ['a', 'b', 'c'],
-                                  ),
-                                  MarkerLayer(
-                                    markers: [
-                                      Marker(
-                                        point: _currentLocation!,
-                                        builder: (ctx) => const Icon(
-                                          Icons.location_pin,
-                                          color: Colors.red,
-                                          size: 40.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                        child: GoogleMap(
+                          myLocationButtonEnabled: true,
+                          initialCameraPosition: CameraPosition(
+                            target: _currentLocation!,
+                            zoom: 15.0,
                           ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: FloatingActionButton(
-                              mini: true,
-                              elevation: 0,
-                              onPressed: _recenterMap,
-                              backgroundColor: Colors.white,
-                              child: const Icon(
-                                Icons.location_searching_rounded,
-                                color: Colors.red,
-                              ),
+                          onMapCreated: (controller) {
+                            _googleMapController = controller;
+                          },
+                          markers: {
+                            Marker(
+                              markerId: const MarkerId('currentLocation'),
+                              position: _currentLocation!,
+                              icon: BitmapDescriptor.defaultMarkerWithHue(
+                                  BitmapDescriptor.hueRed),
                             ),
-                          ),
-                        ]),
+                          },
+                        ),
                       ),
                     ),
             ])),
@@ -410,10 +380,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _recenterMap() {
-    if (_currentLocation != null) {
-      // Center the map to the current location
-      _mapController.move(
-          _currentLocation!, 16.0); // You can adjust zoom as needed
+    if (_currentLocation != null && _googleMapController != null) {
+      _googleMapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(_currentLocation!, 16.0),
+      );
     }
   }
 }
