@@ -1,3 +1,5 @@
+import 'package:flash_pass/forgetPass.dart';
+import 'package:flash_pass/homeSc.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -171,13 +173,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Color(0xFF707070),
                     fontWeight: FontWeight.w500),
               ),
-              Text(
-                " Forgot password",
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.green.shade600.withOpacity(.6),
-                    fontWeight: FontWeight.w700),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const ForgetPassScreen())),
+                child: Text(
+                  " Forgot password",
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.green.shade600.withOpacity(.6),
+                      fontWeight: FontWeight.w700),
+                ),
               ),
             ],
           ),
@@ -188,7 +196,8 @@ class _LoginScreenState extends State<LoginScreen> {
             child: SizedBox(
               width: MediaQuery.of(context).size.width * .92,
               child: ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, ''),
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const HomeScreen())),
                 style: ElevatedButton.styleFrom(
                     splashFactory: NoSplash.splashFactory,
                     backgroundColor: Colors.green.shade100.withOpacity(.7),

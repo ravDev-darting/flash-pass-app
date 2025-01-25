@@ -1,3 +1,4 @@
+import 'package:flash_pass/resetPassSc.dart';
 import 'package:flutter/material.dart';
 
 class ForgetPassScreen extends StatefulWidget {
@@ -136,7 +137,10 @@ class _ForgetPassScreenState extends State<ForgetPassScreen> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * .92,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, ''),
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const ResetPassScreen())),
                   style: ElevatedButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       backgroundColor: Colors.green.shade100.withOpacity(.7),

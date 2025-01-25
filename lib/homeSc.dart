@@ -4,6 +4,131 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
+void showAlert(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        insetPadding: const EdgeInsets.all(10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+            Center(
+              child: Text(
+                'ALERT!',
+                style: TextStyle(
+                  color: Colors.red[900],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  'New Case:-',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                Flexible(
+                  child: Text(
+                    'Amal Jamal, 24 F, Car Accident.',
+                    style: TextStyle(fontSize: 16), // Truncate if necessary
+                    softWrap: true, // Allows text to wrap naturally
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text(
+                  'Location:-',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  ' 1.5KM at Main St.',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text(
+                  'Priority:-',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  ' High',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  border: Border.all(color: Colors.black, width: 1)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                        elevation: 0, backgroundColor: Colors.transparent),
+                    child: const Text(
+                      'Accept',
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                  ),
+                  const VerticalDivider(
+                    thickness: 1,
+                    color: Colors.black,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                        elevation: 0, backgroundColor: Colors.transparent),
+                    child: const Text(
+                      'Deny',
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -90,13 +215,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               10.height,
-              Container(
-                margin: const EdgeInsets.only(left: 10),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(.08),
-                ),
-                child: Text(formattedDate),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(.08),
+                    ),
+                    child: Text(formattedDate),
+                  ),
+                  FloatingActionButton(
+                    tooltip: 'Test alert',
+                    backgroundColor: Colors.green[100],
+                    mini: true,
+                    onPressed: () {
+                      showAlert(context);
+                    },
+                    child: const Icon(Icons.electric_bolt),
+                  ),
+                ],
               ),
               5.height,
               const Padding(

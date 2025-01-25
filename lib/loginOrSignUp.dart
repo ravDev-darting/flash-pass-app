@@ -1,4 +1,5 @@
 import 'package:flash_pass/loginSc.dart';
+import 'package:flash_pass/signUpSc1.dart';
 import 'package:flutter/material.dart';
 
 class LoginOrSignUp extends StatefulWidget {
@@ -150,16 +151,20 @@ class _LoginOrSignUpState extends State<LoginOrSignUp> {
             ),
           ),
           const SizedBox(height: 7),
-          Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * .37,
-                vertical: 15),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: Colors.green.shade100.withOpacity(.43)),
-            child: const Text(
-              'SIGN UP',
-              style: TextStyle(fontSize: 20),
+          GestureDetector(
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const SignUpScreen1())),
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * .37,
+                  vertical: 15),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: Colors.green.shade100.withOpacity(.43)),
+              child: const Text(
+                'SIGN UP',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ),
         ],

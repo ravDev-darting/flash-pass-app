@@ -1,3 +1,4 @@
+import 'package:flash_pass/signUpSc5.dart';
 import 'package:flutter/material.dart';
 
 class SignUpScreen4 extends StatefulWidget {
@@ -144,7 +145,8 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * .92,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, ''),
+                  onPressed: () =>Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const SignUpScreen5())),
                   style: ElevatedButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       backgroundColor: Colors.green.shade100.withOpacity(.7),
