@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flash_pass/homeSc.dart';
 import 'package:flash_pass/splash.dart';
 import 'package:flutter/material.dart';
 
@@ -13,9 +12,12 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreenMain(),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: SplashScreenMain(),
+      ),
     );
   }
 }

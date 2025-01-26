@@ -1,3 +1,4 @@
+import 'package:flash_pass/getPermitScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -95,7 +96,11 @@ void showAlert(BuildContext context) {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const GetPermitScreen()))
+                          .then((value) => Navigator.pop(context));
                     },
                     style: ElevatedButton.styleFrom(
                         elevation: 0, backgroundColor: Colors.transparent),
@@ -137,10 +142,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _switchValue = false;
   LatLng? _currentLocation;
   GoogleMapController? _googleMapController;
-
-  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -153,11 +157,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Card(
@@ -364,8 +367,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           Transform.scale(
                             scale: 0.7,
                             child: CupertinoSwitch(
-                              value: true,
-                              onChanged: (value) {},
+                              value: _switchValue,
+                              onChanged: (value) {
+                                setState(() {
+                                  _switchValue = value;
+                                });
+                              },
                             ),
                           )
                         ],
@@ -450,34 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-            ])),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color.fromARGB(
-            255, 213, 230, 213), // Match the light green color
-        selectedItemColor: Colors.black, // Active icon color
-        unselectedItemColor: Colors.grey, // Inactive icon color
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.support_agent),
-            label: 'Support',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Account',
-          ),
-        ],
+            ]),
       ),
     );
   }
@@ -520,15 +500,9 @@ class _HomeScreenState extends State<HomeScreen> {
       _currentLocation = LatLng(position.latitude, position.longitude);
     });
   }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 }
 
 extension SizeW on num {
-  SizedBox get height => SizedBox(height: toDouble());
-  SizedBox get width => SizedBox(width: toDouble());
+  SizedBox get h1 => SizedBox(height: toDouble());
+  SizedBox get w1 => SizedBox(width: toDouble());
 }
