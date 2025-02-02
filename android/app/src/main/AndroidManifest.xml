@@ -13,6 +13,7 @@
      
 
    <application
+        android:usesCleartextTraffic="true"
         android:label="Flash Pass"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

@@ -13,8 +13,10 @@ class GetPermitScreen extends StatefulWidget {
 class _GetPermitScreenState extends State<GetPermitScreen> {
   LatLng? _currentLocation;
   LatLng? _destinationLocation;
+  LatLng? _midPoint;
   GoogleMapController? _googleMapController;
   final Set<Polyline> _polylines = {};
+  final Set<Marker> _markers = {}; // Use this to hold your markers
 
   @override
   Widget build(BuildContext context) {
@@ -105,22 +107,7 @@ class _GetPermitScreenState extends State<GetPermitScreen> {
                               onMapCreated: (controller) {
                                 _googleMapController = controller;
                               },
-                              markers: {
-                                Marker(
-                                  markerId: const MarkerId('currentLocation'),
-                                  position: _currentLocation!,
-                                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                                      BitmapDescriptor.hueRed),
-                                ),
-                                if (_destinationLocation != null)
-                                  Marker(
-                                    markerId:
-                                        const MarkerId('destinationLocation'),
-                                    position: _destinationLocation!,
-                                    icon: BitmapDescriptor.defaultMarkerWithHue(
-                                        BitmapDescriptor.hueBlue),
-                                  ),
-                              },
+                              markers: _markers, // Use the _markers set here
                               polylines: _polylines,
                             ),
                           ),
@@ -206,6 +193,12 @@ class _GetPermitScreenState extends State<GetPermitScreen> {
         position.longitude,
       );
 
+      // Calculate midpoint for the custom marker
+      _midPoint = LatLng(
+        (_currentLocation!.latitude + _destinationLocation!.latitude) / 2,
+        (_currentLocation!.longitude + _destinationLocation!.longitude) / 2,
+      );
+
       // Clear existing polyline and add a new one
       _polylines.clear(); // Clear any previous polyline data
       _polylines.add(
@@ -216,6 +209,31 @@ class _GetPermitScreenState extends State<GetPermitScreen> {
           width: 5,
         ),
       );
+
+      // Clear markers and add the updated markers
+      _markers.clear();
+      _markers.addAll({
+        Marker(
+          markerId: const MarkerId('currentLocation'),
+          position: _currentLocation!,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        ),
+        if (_destinationLocation != null)
+          Marker(
+            markerId: const MarkerId('destinationLocation'),
+            position: _destinationLocation!,
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          ),
+        if (_midPoint != null)
+          Marker(
+            markerId: const MarkerId('midPoint'),
+            position: _midPoint!,
+            infoWindow: const InfoWindow(title: 'Traffic Light'),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueGreen),
+          ),
+      });
     });
 
     // Calculate bounds for the polyline

@@ -1,4 +1,5 @@
 import 'package:flash_pass/signUpSc5.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignUpScreen4 extends StatefulWidget {
@@ -9,6 +10,74 @@ class SignUpScreen4 extends StatefulWidget {
 }
 
 class _SignUpScreen4State extends State<SignUpScreen4> {
+  final TextEditingController _phoneController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String _verificationId = '';
+
+  // Function to send OTP
+  void _sendOTP() async {
+    String phoneNumber = _phoneController.text.trim();
+    if (phoneNumber.isEmpty) {
+      _showError('Please enter a valid phone number');
+      return;
+    }
+
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: '+92$phoneNumber', // Change to your correct country code
+
+      verificationCompleted: (PhoneAuthCredential credential) {
+        // Auto-verification might work on some devices, ignore for manual OTP
+      },
+
+      verificationFailed: (FirebaseAuthException e) {
+        _showError(e.message ?? 'Something went wrong');
+      },
+
+      codeSent: (String verificationId, int? resendToken) {
+        setState(() {
+          _verificationId = verificationId;
+        });
+        _navigateToOTPVerification();
+      },
+
+      codeAutoRetrievalTimeout: (String verificationId) {
+        setState(() {
+          _verificationId = verificationId;
+        });
+      },
+    );
+  }
+
+  // Function to show error message
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Navigate to OTP verification screen
+  void _navigateToOTPVerification() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const SignUpScreen5(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -109,9 +178,10 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
                     ),
                     borderRadius: BorderRadius.circular(20)),
                 padding: const EdgeInsets.all(1),
-                child: const TextField(
-                  // controller: _reviewController,
-                  decoration: InputDecoration(
+                child: TextField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
                       hintText: '  PHONE NUMBER',
                       enabledBorder:
                           UnderlineInputBorder(borderSide: BorderSide.none),
@@ -149,7 +219,8 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
                     onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const SignUpScreen5())),
+                          builder: (_) => const SignUpScreen5(),
+                        )),
                     style: ElevatedButton.styleFrom(
                         splashFactory: NoSplash.splashFactory,
                         backgroundColor: Colors.green.shade100.withOpacity(.7),

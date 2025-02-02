@@ -168,8 +168,38 @@ class _SignUpScreen1State extends State<SignUpScreen1> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * .92,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const SignUpScreen2())),
+                  onPressed: () => {
+                    if (_controller.text.isNotEmpty)
+                      {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => SignUpScreen2(
+                                      idNumber: _controller.text,
+                                    ))),
+                      }
+                    else
+                      {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Error"),
+                              content:
+                                  const Text("Please enter your ID number"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      }
+                  },
                   style: ElevatedButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       backgroundColor: Colors.green.shade100.withOpacity(.7),

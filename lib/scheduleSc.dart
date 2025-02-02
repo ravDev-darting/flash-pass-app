@@ -1,8 +1,69 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ShiftSchedule extends StatelessWidget {
+class ShiftSchedule extends StatefulWidget {
   const ShiftSchedule({super.key});
+
+  @override
+  State<ShiftSchedule> createState() => _ShiftScheduleState();
+}
+
+class _ShiftScheduleState extends State<ShiftSchedule> {
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    _fetchUserDetails();
+    super.initState();
+  }
+
+  String firstName = "";
+  String lastName = "";
+  String email = "";
+  String badgeNumber = "";
+  bool isLoading = true;
+  Future<void> _fetchUserDetails() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid) // Get user document by UID
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            firstName = userDoc['firstName'] ?? 'No First Name';
+            lastName = userDoc['lastName'] ?? 'No Last Name';
+            email = user.email ?? 'No Email';
+            badgeNumber = userDoc['badgeNumber'] ?? 'No Badge Number';
+            isLoading = false;
+          });
+          RegExp regExp = RegExp(r'\d+'); // This matches one or more digits
+
+          // Find the match
+          Iterable<Match> matches = regExp.allMatches(email);
+
+          // Extract and print the number
+          for (var match in matches) {
+            String number = match.group(0)!;
+            setState(() {
+              email = number;
+            });
+          }
+        }
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        // Handle error if fetching fails
+        print("Error fetching user details: $e");
+      }
+    } else {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +79,18 @@ class ShiftSchedule extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'BACK',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color.fromARGB(178, 4, 31, 5),
+                      ),
+                    )),
+              ),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
@@ -75,11 +148,12 @@ class ShiftSchedule extends StatelessWidget {
                       fontWeight: FontWeight.w600, fontSize: 30),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(10.0),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
                 child: Text(
-                  'Taif Alghamdi',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                  '$firstName $lastName',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600, fontSize: 16),
                 ),
               ),
               Padding(

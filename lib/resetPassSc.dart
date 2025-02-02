@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_pass/loginSc.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,23 @@ class ResetPassScreen extends StatefulWidget {
 }
 
 class _ResetPassScreenState extends State<ResetPassScreen> {
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> sendPasswordResetEmail(
+      String email, BuildContext context) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      showAlert(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
   void showAlert(BuildContext context) {
     showDialog(
       context: context,
@@ -24,7 +42,7 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              Center(
+              const Center(
                 child: Text(
                   'RESET PASSWORD!',
                   style: TextStyle(
@@ -35,8 +53,8 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
-                'Tap to login',
+              const Text(
+                'Once you reset your password via email, Please login again with your new password.',
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
@@ -44,14 +62,16 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                     color: Colors.green[100],
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(10),
                         bottomRight: Radius.circular(10)),
                     border: Border.all(color: Colors.black, width: 1)),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const LoginScreen()));
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (route) => false);
                   },
                   style: ElevatedButton.styleFrom(
                       elevation: 0, backgroundColor: Colors.transparent),
@@ -145,49 +165,23 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
             const Padding(
               padding: EdgeInsets.all(6.0),
               child: Text(
-                "RESET PASSWORD",
+                "EMAIL",
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                     fontSize: 23,
                     color: Colors.black,
                     fontWeight: FontWeight.w500),
               ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * .016,
-                  vertical: 2),
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 2,
-                    color: const Color.fromARGB(178, 4, 31, 5),
-                  ),
-                  borderRadius: BorderRadius.circular(20)),
-              padding: const EdgeInsets.all(1),
-              child: const TextField(
-                // controller: _reviewController,
-                decoration: InputDecoration(
-                    hintText: '  PASSWORD',
-                    enabledBorder:
-                        UnderlineInputBorder(borderSide: BorderSide.none),
-                    focusedBorder:
-                        UnderlineInputBorder(borderSide: BorderSide.none),
-                    hintStyle:
-                        TextStyle(fontSize: 13, color: Color(0xFF707070))),
-              ),
-            ),
-            const SizedBox(
-              height: 30,
             ),
             const Padding(
               padding: EdgeInsets.all(6.0),
               child: Text(
-                "CONFIRM PASSWORD",
+                "Please enter your email address to reset your password.",
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                    fontSize: 23,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500),
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
             ),
             Container(
@@ -201,10 +195,10 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
                   ),
                   borderRadius: BorderRadius.circular(20)),
               padding: const EdgeInsets.all(1),
-              child: const TextField(
-                // controller: _reviewController,
-                decoration: InputDecoration(
-                    hintText: '  CONFIRM PASSWORD',
+              child: TextField(
+                controller: _confirmPasswordController,
+                decoration: const InputDecoration(
+                    hintText: '  EMAIL ADDRESS',
                     enabledBorder:
                         UnderlineInputBorder(borderSide: BorderSide.none),
                     focusedBorder:
@@ -213,28 +207,17 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
                         TextStyle(fontSize: 13, color: Color(0xFF707070))),
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Text(
-                "Your password must include:\n8-32 characters long\n1 lowercase character (a-z)\n1 uppercase (A-Z)\n1 number]\n1 special character e.g !@#\$%",
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w500),
-              ),
-            ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * .16,
+              height: MediaQuery.of(context).size.height * .2,
             ),
             Center(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * .92,
                 child: ElevatedButton(
-                  onPressed: () => showAlert(context),
+                  onPressed: () {
+                    sendPasswordResetEmail(
+                        _confirmPasswordController.text, context);
+                  },
                   style: ElevatedButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       backgroundColor: Colors.green.shade100.withOpacity(.7),

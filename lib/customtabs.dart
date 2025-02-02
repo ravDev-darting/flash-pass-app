@@ -1,7 +1,7 @@
 import 'package:flash_pass/historySc.dart';
 import 'package:flash_pass/homeSc.dart';
-import 'package:flash_pass/scheduleSc.dart';
 import 'package:flash_pass/supportSc.dart';
+import 'package:flash_pass/userDetailsSc.dart';
 import 'package:flutter/material.dart';
 
 class CustomNav extends StatefulWidget {
@@ -18,7 +18,7 @@ class _CustomNavState extends State<CustomNav> {
     const HomeScreen(),
     const HistoryScreen(),
     const SupportScreen(),
-    const ShiftSchedule(),
+    const UserDetailsScreen(),
   ];
 
   void _onItemTapped(int index) {

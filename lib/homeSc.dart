@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_pass/getPermitScreen.dart';
+import 'package:flash_pass/scheduleSc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -210,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Center(
                 child: Text(
-                  'welcome taif'.toUpperCase(),
+                  'welcome $firstName'.toUpperCase(),
                   style: const TextStyle(
                     fontSize: 25,
                     color: Color.fromARGB(178, 4, 31, 5),
@@ -249,41 +252,50 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               5.height,
-              Padding(
-                padding: const EdgeInsets.only(left: 7, right: 7),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color:
-                          const Color.fromARGB(178, 4, 31, 5).withOpacity(.1),
-                      border: Border.all(color: Colors.black)),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircleAvatar(
-                          radius: 25,
-                          backgroundColor: Colors.grey.withOpacity(.2),
-                          child: const Icon(
-                            Icons.person,
-                            color: Colors.grey,
+              GestureDetector(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ShiftSchedule(),
+                    )),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 7, right: 7),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color:
+                            const Color.fromARGB(178, 4, 31, 5).withOpacity(.1),
+                        border: Border.all(color: Colors.black)),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircleAvatar(
+                            radius: 25,
+                            backgroundColor: Colors.grey.withOpacity(.2),
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('taif ali alghamdi'.toUpperCase()),
-                          Text('id no. 12345678'.toUpperCase()),
-                          Text('badge no. 4321'.toUpperCase())
-                        ],
-                      ),
-                      const Spacer(),
-                      const Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.grey,
-                      ),
-                      5.width
-                    ],
+                        isLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('$firstName $lastName'.toUpperCase()),
+                                  Text('id no. $email'.toUpperCase()),
+                                  Text('badge no. $badgeNumber'.toUpperCase())
+                                ],
+                              ),
+                        const Spacer(),
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.grey,
+                        ),
+                        5.width
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -306,14 +318,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: TextStyle(fontSize: 16),
                             ),
                             const Spacer(),
-                            const Padding(
-                              padding: EdgeInsets.only(top: 5),
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.grey,
-                                size: 10,
-                              ),
-                            ),
+                            // const Padding(
+                            //   padding: EdgeInsets.only(top: 5),
+                            //   child: Icon(
+                            //     Icons.arrow_forward_ios,
+                            //     color: Colors.grey,
+                            //     size: 10,
+                            //   ),
+                            // ),
                             5.width,
                           ],
                         ),
@@ -340,14 +352,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                       color: Colors.black.withOpacity(.4)),
                                 )),
                             3.width,
-                            const Padding(
-                              padding: EdgeInsets.only(top: 4.2),
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.grey,
-                                size: 10,
-                              ),
-                            ),
+                            // const Padding(
+                            //   padding: EdgeInsets.only(top: 4.2),
+                            //   child: Icon(
+                            //     Icons.arrow_forward_ios,
+                            //     color: Colors.grey,
+                            //     size: 10,
+                            //   ),
+                            // ),
                             5.width,
                           ],
                         ),
@@ -400,14 +412,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const Spacer(),
                       3.width,
-                      const Padding(
-                        padding: EdgeInsets.only(top: 2),
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.grey,
-                          size: 15,
-                        ),
-                      ),
                       5.width,
                     ],
                   ),
@@ -466,6 +470,56 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+
+    _fetchUserDetails();
+  }
+
+  String firstName = "";
+  String lastName = "";
+  String email = "";
+  String badgeNumber = "";
+  bool isLoading = true;
+
+  // Fetch user details from Firestore
+  Future<void> _fetchUserDetails() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid) // Get user document by UID
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            firstName = userDoc['firstName'] ?? 'No First Name';
+            lastName = userDoc['lastName'] ?? 'No Last Name';
+            email = user.email ?? 'No Email';
+            badgeNumber = userDoc['badgeNumber'] ?? 'No Badge Number';
+            isLoading = false;
+          });
+          RegExp regExp = RegExp(r'\d+'); // This matches one or more digits
+
+          // Find the match
+          Iterable<Match> matches = regExp.allMatches(email);
+
+          // Extract and print the number
+          for (var match in matches) {
+            String number = match.group(0)!;
+            setState(() {
+              email = number;
+            });
+          }
+        }
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        // Handle error if fetching fails
+        print("Error fetching user details: $e");
+      }
+    } else {}
   }
 
   Future<void> _getCurrentLocation() async {

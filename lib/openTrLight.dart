@@ -1,3 +1,4 @@
+import 'package:flash_pass/deptType.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,6 +15,7 @@ class _OpenTrLightState extends State<OpenTrLight> {
   LatLng? _destinationLocation;
   GoogleMapController? _googleMapController;
   final Set<Polyline> _polylines = {};
+  final Set<Marker> _markers = {};
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +134,10 @@ class _OpenTrLightState extends State<OpenTrLight> {
                   height: 60,
                   width: 180,
                   child: ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const EmergencyServicesScreen())),
                     style: ElevatedButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       backgroundColor: Colors.red[900],
@@ -208,24 +213,55 @@ class _OpenTrLightState extends State<OpenTrLight> {
           width: 5,
         ),
       );
-    });
 
-    // Calculate bounds for the polyline
-    double minLat = _currentLocation!.latitude;
-    double minLong = _currentLocation!.longitude;
-    double maxLat = _destinationLocation!.latitude;
-    double maxLong = _destinationLocation!.longitude;
+      // Calculate the midpoint
+      double midLat =
+          (_currentLocation!.latitude + _destinationLocation!.latitude) / 2;
+      double midLong =
+          (_currentLocation!.longitude + _destinationLocation!.longitude) / 2;
+      LatLng midpoint = LatLng(midLat, midLong);
 
-    // Update the camera with bounds after polyline is set
-    if (_googleMapController != null) {
-      _googleMapController!.animateCamera(CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-          southwest: LatLng(minLat, minLong),
-          northeast: LatLng(maxLat, maxLong),
+      // Clear markers and add new ones including the midpoint marker
+      _markers.clear();
+      _markers.addAll({
+        Marker(
+          markerId: const MarkerId('currentLocation'),
+          position: _currentLocation!,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         ),
-        50, // Added padding for better visibility
-      ));
-    }
+        if (_destinationLocation != null)
+          Marker(
+            markerId: const MarkerId('destinationLocation'),
+            position: _destinationLocation!,
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          ),
+        // Custom midpoint marker
+        Marker(
+          markerId: const MarkerId('midpoint'),
+          position: midpoint,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen), // Custom color or icon
+        ),
+      });
+
+      // Calculate bounds for the polyline
+      double minLat = _currentLocation!.latitude;
+      double minLong = _currentLocation!.longitude;
+      double maxLat = _destinationLocation!.latitude;
+      double maxLong = _destinationLocation!.longitude;
+
+      // Update the camera with bounds after polyline is set
+      if (_googleMapController != null) {
+        _googleMapController!.animateCamera(CameraUpdate.newLatLngBounds(
+          LatLngBounds(
+            southwest: LatLng(minLat, minLong),
+            northeast: LatLng(maxLat, maxLong),
+          ),
+          50, // Added padding for better visibility
+        ));
+      }
+    });
   }
 }
 

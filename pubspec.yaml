@@ -47,6 +47,14 @@ dependencies:
   latlong2:
   geolocator:
   intl:
+  cloud_firestore:
+  firebase_core_platform_interface:
+  twilio_flutter:
+  cloud_functions:
+  webview_flutter: 4.2.2
+  http:
+  url_launcher:
+  flutter_inappwebview: ^5.3.0
 
 dev_dependencies:
   flutter_test:

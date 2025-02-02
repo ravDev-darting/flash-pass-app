@@ -1,6 +1,7 @@
 import 'dart:async';
-
-import 'package:flash_pass/dashSc.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Auth import
+import 'package:flash_pass/customtabs.dart';
+import 'package:flash_pass/dashSc.dart'; // Assuming your login screen is in this file
 import 'package:flutter/material.dart';
 
 class SplashScreenMain extends StatefulWidget {
@@ -11,14 +12,14 @@ class SplashScreenMain extends StatefulWidget {
 }
 
 class _SplashScreenMainState extends State<SplashScreenMain> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const DashScreen()),
-          ModalRoute.withName(''));
+    Timer(const Duration(seconds: 2), () {
+      _checkLoginStatus();
     });
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(82, 115, 230, 120),
       body: Center(
@@ -69,5 +70,27 @@ class _SplashScreenMainState extends State<SplashScreenMain> {
         ),
       ),
     );
+  }
+
+  // Check if the user is already logged in
+  void _checkLoginStatus() {
+    User? user = _auth.currentUser;
+
+    // Navigate based on the login status
+    if (user != null) {
+      // If the user is logged in, navigate to DashScreen
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const CustomNav()),
+        ModalRoute.withName(''),
+      );
+    } else {
+      // If the user is not logged in, navigate to LoginScreen
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const DashScreen()),
+        ModalRoute.withName(''),
+      );
+    }
   }
 }

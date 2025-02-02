@@ -1,14 +1,51 @@
 import 'package:flash_pass/signUpSc4.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpScreen3 extends StatefulWidget {
-  const SignUpScreen3({super.key});
+  final String password;
+  final String iqamaNumber;
+  const SignUpScreen3(
+      {super.key, required this.password, required this.iqamaNumber});
 
   @override
   State<SignUpScreen3> createState() => _SignUpScreen3State();
 }
 
 class _SignUpScreen3State extends State<SignUpScreen3> {
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _badgeNumberController = TextEditingController();
+  String _selectedValue = '';
+  Future<void> _saveUserDetails() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (_firstNameController.text.isNotEmpty &&
+          _lastNameController.text.isNotEmpty &&
+          _badgeNumberController.text.isNotEmpty) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .set({
+          'firstName': _firstNameController.text,
+          'lastName': _lastNameController.text,
+          'badgeNumber': _badgeNumberController.text,
+          'iqamaNumber': widget.iqamaNumber,
+          'email': user.email,
+        });
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => const SignUpScreen4()));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please fill in all fields!")),
+        );
+      }
+    } catch (e) {
+      print('this is the error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -121,9 +158,9 @@ class _SignUpScreen3State extends State<SignUpScreen3> {
                     ),
                     borderRadius: BorderRadius.circular(20)),
                 padding: const EdgeInsets.all(1),
-                child: const TextField(
-                  // controller: _reviewController,
-                  decoration: InputDecoration(
+                child: TextField(
+                  controller: _firstNameController,
+                  decoration: const InputDecoration(
                       hintText: '  First name',
                       enabledBorder:
                           UnderlineInputBorder(borderSide: BorderSide.none),
@@ -147,9 +184,9 @@ class _SignUpScreen3State extends State<SignUpScreen3> {
                     ),
                     borderRadius: BorderRadius.circular(20)),
                 padding: const EdgeInsets.all(1),
-                child: const TextField(
-                  // controller: _reviewController,
-                  decoration: InputDecoration(
+                child: TextField(
+                  controller: _lastNameController,
+                  decoration: const InputDecoration(
                       hintText: '  Last name',
                       enabledBorder:
                           UnderlineInputBorder(borderSide: BorderSide.none),
@@ -188,40 +225,52 @@ class _SignUpScreen3State extends State<SignUpScreen3> {
               Row(
                 children: [
                   Radio(
-                    value: 'a',
-                    groupValue: '',
-                    onChanged: (value) {},
+                    value: 'police',
+                    groupValue: _selectedValue,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedValue = value.toString();
+                      });
+                    },
                   ),
                   const Text(
                     'Police',
                     style: TextStyle(fontSize: 22),
-                  )
+                  ),
                 ],
               ),
               Row(
                 children: [
                   Radio(
-                    value: 'a',
-                    groupValue: '',
-                    onChanged: (value) {},
+                    value: 'ambulance',
+                    groupValue: _selectedValue,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedValue = value.toString();
+                      });
+                    },
                   ),
                   const Text(
                     'Ambulance',
                     style: TextStyle(fontSize: 22),
-                  )
+                  ),
                 ],
               ),
               Row(
                 children: [
                   Radio(
-                    value: 'a',
-                    groupValue: '',
-                    onChanged: (value) {},
+                    value: 'fireman',
+                    groupValue: _selectedValue,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedValue = value.toString();
+                      });
+                    },
                   ),
                   const Text(
                     'Fireman',
                     style: TextStyle(fontSize: 22),
-                  )
+                  ),
                 ],
               ),
               Container(
@@ -235,9 +284,9 @@ class _SignUpScreen3State extends State<SignUpScreen3> {
                     ),
                     borderRadius: BorderRadius.circular(20)),
                 padding: const EdgeInsets.all(1),
-                child: const TextField(
-                  // controller: _reviewController,
-                  decoration: InputDecoration(
+                child: TextField(
+                  controller: _badgeNumberController,
+                  decoration: const InputDecoration(
                       hintText: '  Badge number',
                       enabledBorder:
                           UnderlineInputBorder(borderSide: BorderSide.none),
@@ -254,10 +303,9 @@ class _SignUpScreen3State extends State<SignUpScreen3> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * .92,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const SignUpScreen4())),
+                    onPressed: () async {
+                      await _saveUserDetails();
+                    },
                     style: ElevatedButton.styleFrom(
                         splashFactory: NoSplash.splashFactory,
                         backgroundColor: Colors.green.shade100.withOpacity(.7),
