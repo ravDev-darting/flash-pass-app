@@ -15,6 +15,10 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   String firstName = "";
   String lastName = "";
   String email = "";
+  String dob = "";
+  String badgeNumber = "";
+  String iqamaNumber = "";
+  String role = "";
   bool isLoading = true;
 
   @override
@@ -39,6 +43,10 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             firstName = userDoc['firstName'] ?? 'No First Name';
             lastName = userDoc['lastName'] ?? 'No Last Name';
             email = user.email ?? 'No Email';
+            dob = userDoc['dob'] ?? 'No dob';
+            badgeNumber = userDoc['badgeNumber'] ?? 'No badge number';
+            iqamaNumber = userDoc['iqamaNumber'] ?? 'No iqama number';
+            role = userDoc['role'] ?? 'No role specified';
             isLoading = false;
           });
         }
@@ -126,6 +134,26 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                         const SizedBox(height: 10),
                         Text(
                           'Email: $email',
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Badge Number: $badgeNumber',
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'DOB: $dob',
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'IQAMA NUMBER: $iqamaNumber',
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Role: ${role.toUpperCase()}',
                           style: const TextStyle(fontSize: 20),
                         ),
                         const SizedBox(height: 30),

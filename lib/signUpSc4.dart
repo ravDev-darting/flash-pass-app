@@ -73,7 +73,7 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const SignUpScreen5(),
+        builder: (_) => SignUpScreen5(verificationId: _verificationId),
       ),
     );
   }
@@ -216,11 +216,7 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * .92,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SignUpScreen5(),
-                        )),
+                    onPressed: _sendOTP,
                     style: ElevatedButton.styleFrom(
                         splashFactory: NoSplash.splashFactory,
                         backgroundColor: Colors.green.shade100.withOpacity(.7),

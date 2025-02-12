@@ -1,7 +1,54 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class HistoryScreen extends StatelessWidget {
+class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
+
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
+  @override
+  void initState() {
+    _fetchUserDetails();
+    super.initState();
+  }
+
+  List<Map<String, dynamic>> policeHistory = [];
+  List<Map<String, dynamic>> ambulanceHistory = [];
+  List<Map<String, dynamic>> firefHistory = [];
+  String role = "";
+  bool isLoading = true;
+
+  // Fetch user details from Firestore
+  Future<void> _fetchUserDetails() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    CollectionReference history =
+        FirebaseFirestore.instance.collection('history');
+    DocumentSnapshot docSnapshot =
+        await history.doc('Xji4UkEYSN6b9RAGGJQR').get();
+    Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
+
+    if (data != null && data.containsKey('policeHistory')) {
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid) // Get user document by UID
+            .get();
+        setState(() {
+          role = userDoc['role'] ?? 'No role specified';
+          policeHistory =
+              List<Map<String, dynamic>>.from(data['policeHistory']);
+          ambulanceHistory =
+              List<Map<String, dynamic>>.from(data['ambulanceHistory']);
+          firefHistory = List<Map<String, dynamic>>.from(data['firefHistory']);
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,131 +114,80 @@ class HistoryScreen extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
                   ),
                 ),
-                // Example of patient entries
-                patientCard(
-                  icon: Icons.male,
-                  iconColor: Colors.blue,
-                  name: "Amar Khalid",
-                  age: 44,
-                  condition: "Severe Burns",
-                  time: "9:41 AM",
-                ),
-                patientCard(
-                  icon: Icons.female,
-                  iconColor: Colors.pink,
-                  name: "Amani Faroqe",
-                  age: 31,
-                  condition: "Severe Asthma Attack",
-                  time: "9:41 AM",
-                ),
-                patientCard(
-                  icon: Icons.male,
-                  iconColor: Colors.blue,
-                  name: "Sami Abdullah",
-                  age: 55,
-                  condition: "Heart Attack",
-                  time: "9:41 AM",
-                ),
-
                 const SizedBox(
                   height: 20,
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    '12/02/2024',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
-                  ),
-                ),
-                // Example of patient entries
-                patientCard(
-                  icon: Icons.male,
-                  iconColor: Colors.blue,
-                  name: "Amar Khalid",
-                  age: 44,
-                  condition: "Severe Burns",
-                  time: "9:41 AM",
-                ),
-                patientCard(
-                  icon: Icons.female,
-                  iconColor: Colors.pink,
-                  name: "Amani Faroqe",
-                  age: 31,
-                  condition: "Severe Asthma Attack",
-                  time: "9:41 AM",
-                ),
-                patientCard(
-                  icon: Icons.male,
-                  iconColor: Colors.blue,
-                  name: "Sami Abdullah",
-                  age: 55,
-                  condition: "Heart Attack",
-                  time: "9:41 AM",
-                ),
+                isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: role == "police"
+                            ? policeHistory.length
+                            : role == "ambulance"
+                                ? ambulanceHistory.length
+                                : firefHistory.length,
+                        itemBuilder: (context, index) {
+                          var item = role == "police"
+                              ? policeHistory[index]
+                              : role == "ambulance"
+                                  ? ambulanceHistory[index]
+                                  : firefHistory[index];
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 8.0),
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor:
+                                        Colors.white.withOpacity(0.2),
+                                    child: Icon(
+                                        role == "police"
+                                            ? Icons.local_police_rounded
+                                            : role == "ambulance"
+                                                ? Icons.local_hospital_rounded
+                                                : Icons
+                                                    .fire_extinguisher_rounded,
+                                        color: Colors.grey),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item['name'],
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          "Area: ${item['area']} - ${item['activity']} at ${item['time']}",
+                                          style: const TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  // Patient card widget
-  Widget patientCard({
-    required IconData icon,
-    required Color iconColor,
-    required String name,
-    required int age,
-    required String condition,
-    required String time,
-  }) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8.0),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            // Gender icon
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: iconColor.withOpacity(0.2),
-              child: Icon(icon, color: iconColor),
-            ),
-            const SizedBox(width: 12),
-            // Patient details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "$age, $condition",
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Timestamp
-            Text(
-              time,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-              ),
-            ),
-          ],
         ),
       ),
     );

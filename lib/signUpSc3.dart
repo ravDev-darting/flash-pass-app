@@ -2,6 +2,7 @@ import 'package:flash_pass/signUpSc4.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class SignUpScreen3 extends StatefulWidget {
   final String password;
@@ -17,6 +18,25 @@ class _SignUpScreen3State extends State<SignUpScreen3> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _badgeNumberController = TextEditingController();
+
+  final TextEditingController _dateController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      String formattedDate = DateFormat('MM/dd/yy').format(pickedDate);
+      setState(() {
+        _dateController.text = formattedDate;
+      });
+    }
+  }
+
   String _selectedValue = '';
   Future<void> _saveUserDetails() async {
     try {
@@ -33,6 +53,8 @@ class _SignUpScreen3State extends State<SignUpScreen3> {
           'badgeNumber': _badgeNumberController.text,
           'iqamaNumber': widget.iqamaNumber,
           'email': user.email,
+          'dob': _dateController.text,
+          'role': _selectedValue
         });
         Navigator.push(
             context, MaterialPageRoute(builder: (_) => const SignUpScreen4()));
@@ -201,25 +223,30 @@ class _SignUpScreen3State extends State<SignUpScreen3> {
               ),
               Container(
                 margin: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * .016,
-                    vertical: 2),
+                  horizontal: MediaQuery.of(context).size.width * .016,
+                  vertical: 2,
+                ),
                 decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 2,
-                      color: const Color.fromARGB(178, 4, 31, 5),
-                    ),
-                    borderRadius: BorderRadius.circular(20)),
+                  border: Border.all(
+                    width: 2,
+                    color: const Color.fromARGB(178, 4, 31, 5),
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 padding: const EdgeInsets.all(1),
-                child: const TextField(
-                  // controller: _reviewController,
-                  decoration: InputDecoration(
-                      hintText: '  Birthday (mm/dd/yy)',
-                      enabledBorder:
-                          UnderlineInputBorder(borderSide: BorderSide.none),
-                      focusedBorder:
-                          UnderlineInputBorder(borderSide: BorderSide.none),
-                      hintStyle:
-                          TextStyle(fontSize: 13, color: Color(0xFF707070))),
+                child: TextField(
+                  controller: _dateController,
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
+                  decoration: const InputDecoration(
+                    hintText: '  Birthday (mm/dd/yy)',
+                    enabledBorder:
+                        UnderlineInputBorder(borderSide: BorderSide.none),
+                    focusedBorder:
+                        UnderlineInputBorder(borderSide: BorderSide.none),
+                    hintStyle:
+                        TextStyle(fontSize: 13, color: Color(0xFF707070)),
+                  ),
                 ),
               ),
               Row(
