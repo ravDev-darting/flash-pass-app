@@ -115,7 +115,7 @@ class _SupportScreenState extends State<SupportScreen> {
             ],
           ),
         ];
-      case "firefighter":
+      case "fireman":
         return [
           ExpansionTile(
             title: const Text("How do I report a fire emergency?"),

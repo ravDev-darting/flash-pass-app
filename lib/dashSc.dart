@@ -126,40 +126,36 @@ class _DashScreenState extends State<DashScreen> {
               decoration: const BoxDecoration(
                 color: Color.fromARGB(178, 4, 31, 5),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'CONTACT US',
-                      style: TextStyle(fontSize: 20),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'CONTACT US',
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: const <Widget>[
-                        Text(
-                          '+966548293737\npmu@pmu.edu.sa',
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.w400),
-                        ),
-                        Spacer(),
-                        Icon(
-                          Icons.email_outlined,
-                          size: 70,
-                          color: Colors.grey,
-                        ),
-                        Icon(
-                          Icons.call_outlined,
-                          size: 70,
-                          color: Colors.grey,
-                        ),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: const <Widget>[
+                          Text(
+                            '+966548293737\npmu@pmu.edu.sa',
+                            style: TextStyle(
+                                fontSize: 17, fontWeight: FontWeight.w400),
+                          ),
+                          Spacer(),
+                          Icon(Icons.email_outlined,
+                              size: 70, color: Colors.grey),
+                          Icon(Icons.call_outlined,
+                              size: 70, color: Colors.grey),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

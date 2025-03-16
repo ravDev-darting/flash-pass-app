@@ -55,6 +55,7 @@ dependencies:
   http:
   url_launcher:
   flutter_inappwebview: ^5.3.0
+  responsive_framework: ^0.1.5
 
 dev_dependencies:
   flutter_test:
