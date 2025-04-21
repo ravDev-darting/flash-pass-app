@@ -1,5 +1,7 @@
 import 'package:flash_pass/loginOrSignUp.dart';
+import 'package:flash_pass/vpage1.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashScreen extends StatefulWidget {
   const DashScreen({super.key});
@@ -9,6 +11,29 @@ class DashScreen extends StatefulWidget {
 }
 
 class _DashScreenState extends State<DashScreen> {
+  Future<void> _handleVisitorSelection() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_type', 'visitor');
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => EmergencyScreen()),
+    );
+  }
+
+  // Function to handle employee selection
+  Future<void> _handleEmployeeSelection() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        'user_type', 'employee'); // Save user type as employee
+
+    // Navigate to LoginOrSignUp
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginOrSignUp()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -82,37 +107,60 @@ class _DashScreenState extends State<DashScreen> {
               height: 40,
             ),
             GestureDetector(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const LoginOrSignUp())),
+              onTap: _handleEmployeeSelection,
               child: Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * .35,
-                    vertical: 15),
+                constraints: const BoxConstraints(
+                  minWidth: _kButtonMinWidth,
+                  maxWidth: _kButtonMaxWidth,
+                ),
+                height: _kButtonHeight,
+                alignment: Alignment.center,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: _kButtonPadding),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    color: Colors.green.shade100.withOpacity(.43)),
-                child: const Text(
-                  'EMPLOYEE',
-                  style: TextStyle(fontSize: 20),
+                  borderRadius: BorderRadius.circular(
+                      _kButtonHeight / 2), // Perfect circle
+                  color: Colors.green.shade100.withOpacity(.43),
+                ),
+                child: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'EMPLOYEE',
+                    style: TextStyle(
+                      fontSize: _kButtonFontSize,
+                      // Optional: Use responsive font size
+                      // fontSize: MediaQuery.of(context).size.width * 0.05,
+                    ),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: _kButtonSpacing),
             GestureDetector(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const LoginOrSignUp())),
+              onTap: _handleVisitorSelection,
               child: Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * .38,
-                    vertical: 15),
+                constraints: const BoxConstraints(
+                  minWidth: _kButtonMinWidth,
+                  maxWidth: _kButtonMaxWidth,
+                ),
+                height: _kButtonHeight,
+                alignment: Alignment.center,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: _kButtonPadding),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    color: Colors.green.shade100.withOpacity(.43)),
-                child: const Text(
-                  'VISITOR',
-                  style: TextStyle(fontSize: 20),
+                  borderRadius: BorderRadius.circular(_kButtonHeight / 2),
+                  color: Colors.green.shade100.withOpacity(.43),
+                ),
+                child: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'VISITOR',
+                    style: TextStyle(
+                      fontSize: _kButtonFontSize,
+                      // Optional: Use responsive font size
+                      // fontSize: MediaQuery.of(context).size.width * 0.05,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -164,3 +212,10 @@ class _DashScreenState extends State<DashScreen> {
     );
   }
 }
+
+const double _kButtonMinWidth = 200.0; // Minimum width for buttons
+const double _kButtonMaxWidth = 400.0; // Maximum width for buttons
+const double _kButtonHeight = 60.0; // Fixed height works well for buttons
+const double _kButtonPadding = 16.0; // Horizontal padding
+const double _kButtonFontSize = 20.0;
+const double _kButtonSpacing = 10.0;

@@ -1,4 +1,5 @@
 import 'package:flash_pass/deptType.dart';
+import 'package:flash_pass/reqRecSc.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -137,7 +138,7 @@ class _OpenTrLightState extends State<OpenTrLight> {
                     onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const EmergencyServicesScreen())),
+                            builder: (_) => const RequestReceivedScreen())),
                     style: ElevatedButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       backgroundColor: Colors.red[900],

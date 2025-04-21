@@ -1,33 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flash_pass/dashSc.dart'; // Assuming this is your dashboard screen
+import 'package:flash_pass/dashSc.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   const UserDetailsScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _UserDetailsScreenState createState() => _UserDetailsScreenState();
 }
 
 class _UserDetailsScreenState extends State<UserDetailsScreen> {
-  String firstName = "";
+  String firstName = "Visitor";
   String lastName = "";
-  String email = "";
-  String dob = "";
-  String badgeNumber = "";
-  String iqamaNumber = "";
-  String role = "";
+  String email = "guest@example.com";
+  String dob = "Not specified";
+  String badgeNumber = "N/A";
+  String iqamaNumber = "N/A";
+  String role = "VISITOR";
   bool isLoading = true;
-
   @override
   void initState() {
     super.initState();
     _fetchUserDetails();
   }
 
-  // Fetch user details from Firestore
   Future<void> _fetchUserDetails() async {
     final User? user = FirebaseAuth.instance.currentUser;
 
@@ -35,7 +32,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       try {
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection('users')
-            .doc(user.uid) // Get user document by UID
+            .doc(user.uid)
             .get();
 
         if (userDoc.exists) {
@@ -43,9 +40,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             firstName = userDoc['firstName'] ?? 'No First Name';
             lastName = userDoc['lastName'] ?? 'No Last Name';
             email = user.email ?? 'No Email';
-            dob = userDoc['dob'] ?? 'No dob';
-            badgeNumber = userDoc['badgeNumber'] ?? 'No badge number';
-            iqamaNumber = userDoc['iqamaNumber'] ?? 'No iqama number';
+            dob = userDoc['dob'] ?? 'Not specified';
+            badgeNumber = userDoc['badgeNumber'] ?? 'N/A';
+            iqamaNumber = userDoc['iqamaNumber'] ?? 'N/A';
             role = userDoc['role'] ?? 'No role specified';
             isLoading = false;
           });
@@ -54,24 +51,18 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         setState(() {
           isLoading = false;
         });
-        // Handle error if fetching fails
         print("Error fetching user details: $e");
       }
     } else {
-      // If no user is logged in, navigate to login screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (_) =>
-                const DashScreen()), // Assuming you want to go to dashboard
+        MaterialPageRoute(builder: (_) => const DashScreen()),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final User? user = FirebaseAuth.instance.currentUser; // Get current user
-
     return SafeArea(
       child: Scaffold(
         body: Padding(
@@ -80,6 +71,18 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Flash Pass Logo Section
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'BACK',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color.fromARGB(178, 4, 31, 5),
+                      ),
+                    )),
+              ),
               Center(
                 child: Card(
                   elevation: 0,
@@ -88,16 +91,23 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          Icons.traffic_outlined,
-                          size: 80,
-                          color: Color.fromARGB(178, 4, 31, 5),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(178, 4, 31, 5)
+                                .withOpacity(.25),
+                          ),
+                          child: const Icon(
+                            Icons.traffic_outlined,
+                            size: 80,
+                            color: Color.fromARGB(178, 4, 31, 5),
+                          ),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
                             Text(
                               " FLASH🚓PASS",
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 35,
@@ -106,6 +116,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                             ),
                             Text(
                               "  EMERGENCY",
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 17,
@@ -119,46 +130,28 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * .2),
+              SizedBox(height: MediaQuery.of(context).size.height * .1),
 
-              // Loading or user details display
               isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Column(
                       children: [
-                        // Display user first and last name
-                        Text(
-                          'Name: $firstName $lastName',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Email: $email',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Badge Number: $badgeNumber',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'DOB: $dob',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'IQAMA NUMBER: $iqamaNumber',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Role: ${role.toUpperCase()}',
-                          style: const TextStyle(fontSize: 20),
-                        ),
+                        // Visitor-specific message
+
+                        // Display user details
+                        _buildDetailRow('',
+                            '${firstName.toUpperCase()} ${lastName.toUpperCase()}'),
+                        _buildDetailRow('EMAIL:', email),
+                        _buildDetailRow('ID NO.', iqamaNumber),
+                        _buildDetailRow('BADGE NO.', badgeNumber),
+
+                        _buildDetailRow('', '${role.toUpperCase()} DEPARTMENT'),
                         const SizedBox(height: 30),
 
-                        // Logout Button
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * .2),
+
+                        // Logout/Exit Button
                         Center(
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width * .4,
@@ -167,18 +160,22 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                                 await _logout(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                  splashFactory: NoSplash.splashFactory,
-                                  backgroundColor:
-                                      Colors.green.shade100.withOpacity(.7),
-                                  shadowColor: Colors.transparent,
-                                  elevation: 0,
-                                  minimumSize: const Size(0, 50),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20))),
+                                splashFactory: NoSplash.splashFactory,
+                                backgroundColor:
+                                    Colors.green.shade100.withOpacity(.7),
+                                shadowColor: Colors.transparent,
+                                elevation: 0,
+                                minimumSize: const Size(0, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
                               child: const Text(
                                 'Logout',
                                 style: TextStyle(
-                                    fontSize: 18, color: Colors.black),
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ),
@@ -192,37 +189,70 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     );
   }
 
-  // Firebase logout function
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1.8),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black, width: 2),
+          color: Colors.green.shade100.withOpacity(.7),
+        ),
+        child: Row(
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 20,
+                color: Color.fromARGB(178, 4, 31, 5),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Color.fromARGB(178, 4, 31, 5),
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _logout(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut(); // Sign out user from Firebase
-      // After logging out, navigate to login screen
+      await FirebaseAuth.instance.signOut();
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-            builder: (_) =>
-                const DashScreen()), // Navigate to your main screen after logout
+        MaterialPageRoute(builder: (_) => const DashScreen()),
         ModalRoute.withName(''),
       );
     } catch (e) {
-      // Show an error message in case of any issue
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Error"),
-            content: Text(e.toString()),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
+      _showErrorDialog(context, e.toString());
     }
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

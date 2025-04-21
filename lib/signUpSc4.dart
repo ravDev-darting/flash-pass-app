@@ -1,6 +1,7 @@
 import 'package:flash_pass/signUpSc5.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SignUpScreen4 extends StatefulWidget {
   const SignUpScreen4({super.key});
@@ -11,42 +12,54 @@ class SignUpScreen4 extends StatefulWidget {
 
 class _SignUpScreen4State extends State<SignUpScreen4> {
   final TextEditingController _phoneController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isLoading = false;
 
-  String _verificationId = '';
+  Future<void> sendSms() async {
+    setState(() => _isLoading = true);
 
-  // Function to send OTP
-  void _sendOTP() async {
-    String phoneNumber = _phoneController.text.trim();
+    final phoneNumber = _phoneController.text.trim();
     if (phoneNumber.isEmpty) {
       _showError('Please enter a valid phone number');
+      setState(() => _isLoading = false);
       return;
     }
 
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: '+92$phoneNumber', // Change to your correct country code
+    // Generate a random 6-digit OTP
+    final otp =
+        (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString();
+    const accountSid = 'ACafa13591da32caac26209a332b074073';
+    const authToken = 'ee96b5b609483c65c6621f0f9d106a3f';
+    const twilioUrl =
+        'https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json';
 
-      verificationCompleted: (PhoneAuthCredential credential) {
-        // Auto-verification might work on some devices, ignore for manual OTP
-      },
+    final credentials = base64Encode(utf8.encode('$accountSid:$authToken'));
 
-      verificationFailed: (FirebaseAuthException e) {
-        _showError(e.message ?? 'Something went wrong');
-      },
+    try {
+      final response = await http.post(
+        Uri.parse(twilioUrl),
+        headers: {
+          'Authorization': 'Basic $credentials',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'To': '+966$phoneNumber',
+          'From': '+16315402092',
+          'Body': 'Your FlashPass OTP code is: $otp',
+        },
+      );
 
-      codeSent: (String verificationId, int? resendToken) {
-        setState(() {
-          _verificationId = verificationId;
-        });
-        _navigateToOTPVerification();
-      },
-
-      codeAutoRetrievalTimeout: (String verificationId) {
-        setState(() {
-          _verificationId = verificationId;
-        });
-      },
-    );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _navigateToOTPVerification(otp);
+        print(response.body);
+      } else {
+        final errorData = json.decode(response.body);
+        _showError(errorData['message'] ?? 'Failed to send OTP');
+      }
+    } catch (e) {
+      _showError('Failed to connect to Twilio: ${e.toString()}');
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   // Function to show error message
@@ -68,12 +81,12 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
     );
   }
 
-  // Navigate to OTP verification screen
-  void _navigateToOTPVerification() {
+  // Navigate to OTP verification screen with the generated OTP
+  void _navigateToOTPVerification(String otp) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const SignUpScreen5(),
+        builder: (_) => SignUpScreen5(verificationCode: otp),
       ),
     );
   }
@@ -90,20 +103,19 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 25,
-              ),
+              const SizedBox(height: 25),
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'BACK',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Color.fromARGB(178, 4, 31, 5),
-                      ),
-                    )),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'BACK',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Color.fromARGB(178, 4, 31, 5),
+                    ),
+                  ),
+                ),
               ),
               Center(
                 child: Card(
@@ -151,9 +163,7 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * .04,
-              ),
+              SizedBox(height: MediaQuery.of(context).size.height * .04),
               const Padding(
                 padding: EdgeInsets.all(6.0),
                 child: Text(
@@ -164,9 +174,7 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
                       fontWeight: FontWeight.w500),
                 ),
               ),
-              const SizedBox(
-                height: 8,
-              ),
+              const SizedBox(height: 8),
               Container(
                 margin: EdgeInsets.symmetric(
                     horizontal: MediaQuery.of(context).size.width * .016,
@@ -195,13 +203,8 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: const [
-                    Icon(
-                      Icons.sms_outlined,
-                      color: Colors.grey,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
+                    Icon(Icons.sms_outlined, color: Colors.grey),
+                    SizedBox(width: 5),
                     Text(
                       'CODE WILL BE SENT TO YOUR PHONE NUMBER',
                       style: TextStyle(fontSize: 15, color: Colors.grey),
@@ -209,18 +212,12 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * .35,
-              ),
+              SizedBox(height: MediaQuery.of(context).size.height * .35),
               Center(
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * .92,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SignUpScreen5(),
-                        )),
+                    onPressed: _isLoading ? null : sendSms,
                     style: ElevatedButton.styleFrom(
                         splashFactory: NoSplash.splashFactory,
                         backgroundColor: Colors.green.shade100.withOpacity(.7),
@@ -229,16 +226,18 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
                         minimumSize: const Size(0, 50),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20))),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        'Continue',
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal),
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              'Continue',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ),
                   ),
                 ),
               ),
