@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flash_pass/succRegistered.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpScreen5 extends StatefulWidget {
   final String verificationCode;
@@ -12,33 +15,80 @@ class SignUpScreen5 extends StatefulWidget {
 class _SignUpScreen5State extends State<SignUpScreen5> {
   final TextEditingController _otpController = TextEditingController();
 
+  bool _isLoading = false;
   @override
   void dispose() {
     _otpController.dispose(); // Clean up the controller
     super.dispose();
   }
 
-  void _validateOtp(BuildContext context) {
-    String enteredOtp = _otpController.text.trim();
-    if (enteredOtp.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the OTP')),
-      );
-      return;
-    }
-
-    if (enteredOtp == widget.verificationCode) {
-      // OTP is valid, navigate to the next screen
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const RegistrationDoneScreen()),
-      );
+  Future<void> sendSms() async {
+    setState(() => _isLoading = true);
+    if (_otpController.text.trim().isEmpty) {
+      _showError('Please enter an OTP code');
+      setState(() => _isLoading = false);
     } else {
-      // OTP is invalid, show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid OTP. Please try again.')),
-      );
+      const accountSid = 'ACafa13591da32caac26209a332b074073';
+      const authToken = 'ee96b5b609483c65c6621f0f9d106a3f';
+      const twilioUrl =
+          'https://verify.twilio.com/v2/Services/VAe1921f50c1ba83c0c8ff7b321931453b/VerificationCheck';
+
+      final credentials = base64Encode(utf8.encode('$accountSid:$authToken'));
+
+      try {
+        final response = await http.post(
+          Uri.parse(twilioUrl),
+          headers: {
+            'Authorization': 'Basic $credentials',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: {
+            'To': widget.verificationCode,
+            'Code': _otpController.text.trim(),
+          },
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          final decodedResponse = json.decode(response.body);
+          if (decodedResponse['status'] == "pending") {
+            _showError('Invalid OTP code. Please try again.');
+          } else if (decodedResponse['status'] == "approved") {
+            // ignore: use_build_context_synchronously
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RegistrationDoneScreen()),
+            );
+          } // Debug raw response
+
+          print(response.body);
+        } else {
+          final errorData = json.decode(response.body);
+          _showError(errorData['message'] ?? 'Failed to send OTP');
+        }
+      } catch (e) {
+        _showError('Failed to connect to Twilio: ${e.toString()}');
+      } finally {
+        setState(() => _isLoading = false);
+      }
     }
+  }
+
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -170,7 +220,7 @@ class _SignUpScreen5State extends State<SignUpScreen5> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * .92,
                   child: ElevatedButton(
-                    onPressed: () => _validateOtp(context),
+                    onPressed: _isLoading ? null : sendSms,
                     style: ElevatedButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       backgroundColor: Colors.green.shade100.withOpacity(.7),
@@ -181,17 +231,18 @@ class _SignUpScreen5State extends State<SignUpScreen5> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        'Continue',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              'Continue',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ),
                   ),
                 ),
               ),

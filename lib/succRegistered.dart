@@ -89,8 +89,10 @@ class _RegistrationDoneScreenState extends State<RegistrationDoneScreen> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * .92,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen())),
+                  onPressed: () => Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false),
                   style: ElevatedButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       backgroundColor: Colors.green.shade100.withOpacity(.7),

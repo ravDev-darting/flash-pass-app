@@ -17,7 +17,7 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
   Future<void> sendSms() async {
     setState(() => _isLoading = true);
 
-    final phoneNumber = _phoneController.text.trim();
+    final phoneNumber = '+966${_phoneController.text.trim()}';
     if (phoneNumber.isEmpty) {
       _showError('Please enter a valid phone number');
       setState(() => _isLoading = false);
@@ -30,7 +30,7 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
     const accountSid = 'ACafa13591da32caac26209a332b074073';
     const authToken = 'ee96b5b609483c65c6621f0f9d106a3f';
     const twilioUrl =
-        'https://api.twilio.com/2010-04-01/Accounts/$accountSid/Messages.json';
+        'https://verify.twilio.com/v2/Services/VAe1921f50c1ba83c0c8ff7b321931453b/Verifications';
 
     final credentials = base64Encode(utf8.encode('$accountSid:$authToken'));
 
@@ -42,14 +42,15 @@ class _SignUpScreen4State extends State<SignUpScreen4> {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: {
-          'To': '+966$phoneNumber',
-          'From': '+16315402092',
-          'Body': 'Your FlashPass OTP code is: $otp',
+          'To': phoneNumber,
+          'Channel': 'sms',
         },
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        _navigateToOTPVerification(otp);
+        _navigateToOTPVerification(phoneNumber);
+        // Debug raw response
+
         print(response.body);
       } else {
         final errorData = json.decode(response.body);
