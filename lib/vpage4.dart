@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_pass/dashSc.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,103 @@ class VisitorFeedback extends StatefulWidget {
 
 class _VisitorFeedbackState extends State<VisitorFeedback> {
   String _selectedValue = '';
+  final TextEditingController _feedbackController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void dispose() {
+    _feedbackController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitFeedback() async {
+    if (_feedbackController.text.isEmpty || _selectedValue.isEmpty) {
+      // Show error if fields are empty
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please provide all feedback details')),
+      );
+      return;
+    }
+
+    try {
+      // Save feedback to Firestore
+      await _firestore.collection('feedback').add({
+        'comments': _feedbackController.text,
+        'wouldTryAgain': _selectedValue,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      // Show success dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            insetPadding: const EdgeInsets.all(60),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                const Center(
+                  child: Text(
+                    'Thank You',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    border: Border.all(color: Colors.black, width: 1),
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const DashScreen()),
+                          ModalRoute.withName(''),
+                        ).then((value) => Navigator.pop(context));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          ),
+                        ),
+                        elevation: 0,
+                        backgroundColor: Colors.transparent,
+                      ),
+                      child: Text(
+                        'Return to homepage'.toUpperCase(),
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      // Show error if submission fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to submit feedback: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +192,7 @@ class _VisitorFeedbackState extends State<VisitorFeedback> {
 
                 // Name TextField
                 TextField(
+                  controller: _feedbackController,
                   maxLines: 5,
                   decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
@@ -160,82 +259,12 @@ class _VisitorFeedbackState extends State<VisitorFeedback> {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * .2),
 
-                // Emergency Dropdown Section
-
                 // Continue Button
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Dialog(
-                            insetPadding: const EdgeInsets.all(60),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(height: 20),
-                                const Center(
-                                  child: Text(
-                                    'Thank You',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.green[100],
-                                    border: Border.all(
-                                        color: Colors.black, width: 1),
-                                  ),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pushAndRemoveUntil(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  const DashScreen()),
-                                          ModalRoute.withName(''),
-                                        ).then(
-                                            (value) => Navigator.pop(context));
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.only(
-                                            bottomLeft: Radius.circular(10),
-                                            bottomRight: Radius.circular(10),
-                                          ),
-                                        ),
-                                        elevation: 0,
-                                        backgroundColor: Colors.transparent,
-                                      ),
-                                      child: Text(
-                                        'Return to homepage'.toUpperCase(),
-                                        style: const TextStyle(
-                                            color: Colors.black, fontSize: 16),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
+                    onPressed: _submitFeedback,
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
                       backgroundColor: Colors.green.shade100.withOpacity(.5),
