@@ -72,91 +72,91 @@ lib/
 
 ### 🚦main_screen
 
-<img src="screenshots/flash_pass/main_screen.png" width="300"/>
+<img src="screenshots/flash_pass_app/main_screen.png" width="300"/>
 
 ### 🚦empolyer_sign_up_login.png
 
-<img src="screenshots/flash_pass/empolyer_sign_up_login.png" width="300"/>
+<img src="screenshots/flash_pass_app/empolyer_sign_up_login.png" width="300"/>
 
 ### 🚦employe_id
 
-<img src="screenshots/flash_pass/employe_id.png" width="300"/>
+<img src="screenshots/flash_pass_app/employe_id.png" width="300"/>
 
 ### 🚦set_password
 
-<img src="screenshots/flash_pass/set_password.png" width="300"/>
+<img src="screenshots/flash_pass_app/set_password.png" width="300"/>
 
 ### 🚦login
 
-<img src="screenshots/flash_pass/login.png" width="300"/>
+<img src="screenshots/flash_pass_app/login.png" width="300"/>
 
 ### 🚦employe_add_details
 
-<img src="screenshots/flash_pass/employe_add_details.png" width="300"/>
+<img src="screenshots/flash_pass_app/employe_add_details.png" width="300"/>
 
 ### 🚦employe_dashboard
 
-<img src="screenshots/flash_pass/employe_dashboard.png" width="300"/>
+<img src="screenshots/flash_pass_app/employe_dashboard.png" width="300"/>
 
 ### 🚦emergency
 
-<img src="screenshots/flash_pass/emergency.png" width="300"/>
+<img src="screenshots/flash_pass_app/emergency.png" width="300"/>
 
 ### 🚦visitor_detail
 
-<img src="screenshots/flash_pass/visitor_detail.png" width="300"/>
+<img src="screenshots/flash_pass_app/visitor_detail.png" width="300"/>
 
 ### 🚦mploye_phone_number
 
-<img src="screenshots/flash_pass/employe_phone_number.png" width="300"/>
+<img src="screenshots/flash_pass_app/employe_phone_number.png" width="300"/>
 
 ### 🚦location
 
-<img src="screenshots/flash_pass/location.png" width="300"/>
+<img src="screenshots/flash_pass_app/location.png" width="300"/>
 
 ### 🚦map
 
-<img src="screenshots/flash_pass/map.png" width="300"/>
+<img src="screenshots/flash_pass_app/map.png" width="300"/>
 
 ### 🚦send \_request
 
-<img src="screenshots/flash_pass/send _request.png" width="300"/>
+<img src="screenshots/flash_pass_app/send _request.png" width="300"/>
 
 ### 🚦recevied_request
 
-<img src="screenshots/flash_pass/request.png" width="300"/>
+<img src="screenshots/flash_pass_app/request.png" width="300"/>
 
 ### 🚦coming_alert
 
-<img src="screenshots/flash_pass/coming_alert.png" width="300"/>
+<img src="screenshots/flash_pass_app/coming_alert.png" width="300"/>
 
 ### 🚦traffic_light
 
-<img src="screenshots/flash_pass/traffic_light.png" width="300"/>
+<img src="screenshots/flash_pass_app/traffic_light.png" width="300"/>
 
 ### 🚦support
 
-<img src="screenshots/flash_pass/support.png" width="300"/>
+<img src="screenshots/flash_pass_app/support.png" width="300"/>
 
 ### 🚦history
 
-<img src="screenshots/flash_pass/history.png" width="300"/>
+<img src="screenshots/flash_pass_app/history.png" width="300"/>
 
 ### 🚦profile_setting
 
-<img src="screenshots/flash_pass/profile_setting-screen.png" width="300"/>
+<img src="screenshots/flash_pass_app/profile_setting-screen.png" width="300"/>
 
 ### 🚦empolyee_detail
 
-<img src="screenshots/flash_pass/empoly_detail.png" width="300"/>
+<img src="screenshots/flash_pass_app/empoly_detail.png" width="300"/>
 
 ### 🚦employee_shift
 
-<img src="screenshots/flash_pass/employe_shift.png" width="300"/>
+<img src="screenshots/flash_pass_app/employe_shift.png" width="300"/>
 
 ### 🚦feedback
 
-<img src="screenshots/flash_pass/feedback.png" width="300"/>
+<img src="screenshots/flash_pass_app/feedback.png" width="300"/>
 
 ---
 
