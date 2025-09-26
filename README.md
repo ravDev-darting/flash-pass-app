@@ -74,11 +74,11 @@ lib/
 
 <img src="screenshots/flash_pass_app/main_screen.png" width="300"/>
 
-### 🚦empolyer_sign_up_login.png
+### 🚦empolyee_sign_up_login.png
 
 <img src="screenshots/flash_pass_app/empolyer_sign_up_login.png" width="300"/>
 
-### 🚦employe_id
+### 🚦employee_id
 
 <img src="screenshots/flash_pass_app/employe_id.png" width="300"/>
 
@@ -90,11 +90,11 @@ lib/
 
 <img src="screenshots/flash_pass_app/login.png" width="300"/>
 
-### 🚦employe_add_details
+### 🚦employee_add_details
 
 <img src="screenshots/flash_pass_app/employe_add_details.png" width="300"/>
 
-### 🚦employe_dashboard
+### 🚦employee_dashboard
 
 <img src="screenshots/flash_pass_app/employe_dashboard.png" width="300"/>
 
@@ -106,7 +106,7 @@ lib/
 
 <img src="screenshots/flash_pass_app/visitor_detail.png" width="300"/>
 
-### 🚦mploye_phone_number
+### 🚦employee_phone_number
 
 <img src="screenshots/flash_pass_app/employe_phone_number.png" width="300"/>
 
